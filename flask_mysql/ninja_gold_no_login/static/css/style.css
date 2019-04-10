@@ -1,0 +1,44 @@
+.gold-container {
+  margin-top: 10px;
+}
+
+.gold-container p {
+  display: inline-block;
+}
+
+.gold {
+  border: 1px solid black;
+  text-align: right;
+  width: 150px;
+  padding: 2px;
+  display: inline-block;
+}
+
+.locations {
+  display: flex;
+  flex-wrap: auto;
+}
+
+.location {
+  border: 1px solid black;
+  padding: 20px;
+  width: 300px;
+}
+
+.activities-container {
+  margin-top: 10px;
+}
+
+.activities {
+  border: 1px solid black;
+  height: 200px;
+  overflow-y: auto;
+}
+
+.green-text {
+  color: green;
+}
+
+.red-text {
+  color: red;
+}
