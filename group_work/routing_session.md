@@ -5,7 +5,7 @@
     - What are 2 different ways to send dynamic information to the server?
     - When do we want to use parameters in a URL?
     - Where is session stored?
-    - What type of data is session represented in in Flask?
+    - What type of data is session represented as in Flask?
     - When do we use session to store information?
     - How do we decide what our route patterns should be?
     - What are the different ways we can send requests to our server in HTML?
