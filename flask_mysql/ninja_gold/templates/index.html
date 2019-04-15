@@ -35,9 +35,9 @@
       <div class="activities">
         {% for activity in activities %}
           {% if activity['gold'] >= 0 %}
-            <p class="green-text">Earned {{ activity['gold'] }} golds from the {{ activity['location_name'] }}. ({{ activity['created_at'] }})</p>
+            <p class="green-text">Earned {{ activity['gold'] }} golds from the {{ activity['location_name'] }}. ({{ activity['created_at'] | time_formatter }})</p>
           {% else %}
-            <p class="red-text">Lost {{ activity['gold'] | abs }} golds from the {{ activity['location_name'] }}. ({{ activity['created_at'] }})</p>
+            <p class="red-text">Lost {{ activity['gold'] | abs }} golds from the {{ activity['location_name'] }}. ({{ activity['created_at'] | time_formatter }})</p>
           {% endif %}
         {% endfor %}
       </div>

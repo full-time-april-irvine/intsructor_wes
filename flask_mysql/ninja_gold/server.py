@@ -3,10 +3,13 @@ from mysqlconnection import connectToMySQL
 from flask_bcrypt import Bcrypt
 import random
 import re
+from filters import time_formatter
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = "asdf;lkjasdf"
+
+app.jinja_env.filters['time_formatter'] = time_formatter
 
 SCHEMA = 'ninja_gold'
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')

@@ -9,7 +9,9 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    db = connectToMySQL('pets')
+    pets = db.query_db("SELECT * FROM pets")
+    return render_template('index.html', all_pets = pets)
 
 @app.route('/new')
 def new():
@@ -65,6 +67,13 @@ def process():
             't': request.form['type'],
         }
         db.query_db(query, data)
+    return redirect('/')
+
+@app.route('/click_on_specific_pet_form', methods=['POST'])
+def click():
+    print("*" * 80)
+    print(request.form)
+    print("*" * 80)
     return redirect('/')
 
 if __name__ == "__main__":
