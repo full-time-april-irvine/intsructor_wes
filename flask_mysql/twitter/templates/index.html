@@ -8,17 +8,23 @@
    href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
   <link rel="stylesheet" type="text/css" 
    href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <title>Document</title>
 </head>
 <body>
   <div class="container">
-    <h1>This is the home page</h1>
+    <h1>Welcome to Twitter, {{ user['username'] }}</h1>
     <div class="tweets">
       {% for tweet in tweets %}
         <div class="tweet">
-          <h2>@{{ tweet['username'] }}</h2>
+          <h2>
+            <a href="">@{{ tweet['username'] }}</a>
+          </h2>
           <h3>Tweeted at: {{ tweet['created_at'] | time_formatter }}</h3>
           <p>{{ tweet['content'] }}</p>
+          <p>Number of likes: {{ tweet['num_likes'] }}</p>
+          <a href="/add_like/{{ tweet['id'] }}">Like</a>
+          <a href="">Delete</a>
         </div>
       {% endfor %}
     </div>

@@ -20,11 +20,22 @@ def index():
         return redirect('/users/new')
 
     db = connectToMySQL(SCHEMA_NAME)
-    query = """SELECT users.username, tweets.content, tweets.created_at FROM tweets
-            JOIN users ON users.id = tweets.creator_id
-            ORDER BY tweets.created_at DESC;"""
+    query = """SELECT users.username, tweets.content, tweets.created_at, tweets.id, COUNT(likes.id) AS num_likes FROM tweets
+                JOIN users ON users.id = tweets.creator_id
+                JOIN likes ON tweets.id = likes.tweet_id
+                GROUP BY likes.tweet_id
+                ORDER BY tweets.created_at DESC;"""
     tweet_list = db.query_db(query)
-    return render_template('index.html', tweets=tweet_list)
+
+    db = connectToMySQL(SCHEMA_NAME)
+    query = """SELECT username FROM users
+                WHERE id = %(user_id)s"""
+    data = {
+        "user_id": session['user_id']
+    }
+    user_list = db.query_db(query, data)
+    specific_user = user_list[0]
+    return render_template('index.html', tweets=tweet_list, user=specific_user)
 
 @app.route('/users/new')
 def users_new():
@@ -91,9 +102,25 @@ def login():
         user = matching_users[0]
         if bcrypt.check_password_hash(user['pw_hash'], request.form['password']):
             session['user_id'] = user['id']
-            return redirect('/users/new')
+            return redirect('/')
 
     flash("Username or password invalid")
+    return redirect('/users/new')
+
+@app.route('/add_like/<tweet_id>')
+def add_like(tweet_id):
+    print("*" * 80)
+    print("user_id:", session['user_id'])
+    print("tweet_id:", tweet_id)
+    print("*" * 80)
+    db = connectToMySQL(SCHEMA_NAME)
+    query = """INSERT INTO likes (tweet_id, user_id)
+                VALUES(%(t_id)s, %(u_id)s);"""
+    data = {
+        't_id': tweet_id,
+        'u_id': session['user_id']
+    }
+    db.query_db(query, data)
     return redirect('/')
 
 if __name__ == "__main__":
