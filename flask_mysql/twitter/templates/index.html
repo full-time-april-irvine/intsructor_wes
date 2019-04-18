@@ -14,6 +14,19 @@
 <body>
   <div class="container">
     <h1>Welcome to Twitter, {{ user['username'] }}</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form action="/tweets/create" method="post">
+      <textarea name="content" placeholder="your tweet here..." cols="30" rows="10"></textarea>
+      <input type="submit" value="Add Tweet">
+    </form>
     <div class="tweets">
       {% for tweet in tweets %}
         <div class="tweet">
@@ -24,9 +37,11 @@
           <p>{{ tweet['content'] }}</p>
           <p>Number of likes: {{ tweet['num_likes'] }}</p>
           <a href="/add_like/{{ tweet['id'] }}" class="button">Like</a>
-          <form action="/tweets/{{ tweet['id'] }}/delete" method="post">
-            <input type="submit" value="Delete">
-          </form>
+          {% if session['user_id'] == tweet['creator_id'] %}
+            <form action="/tweets/{{ tweet['id'] }}/delete" method="post">
+              <input type="submit" value="Delete">
+            </form>
+          {% endif %}
         </div>
       {% endfor %}
     </div>

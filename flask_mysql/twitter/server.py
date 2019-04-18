@@ -22,9 +22,9 @@ def index():
 
     db = connectToMySQL(SCHEMA_NAME)
     query = """SELECT users.id AS creator_id, users.username, tweets.content, tweets.created_at, tweets.id, COUNT(likes.id) AS num_likes FROM tweets
-                JOIN users ON users.id = tweets.creator_id
-                JOIN likes ON tweets.id = likes.tweet_id
-                GROUP BY likes.tweet_id
+                LEFT JOIN users ON users.id = tweets.creator_id
+                LEFT JOIN likes ON tweets.id = likes.tweet_id
+                GROUP BY likes.tweet_id, creator_id, users.username, tweets.content, tweets.created_at, tweets.id
                 ORDER BY tweets.created_at DESC;"""
     tweet_list = db.query_db(query)
 
@@ -115,6 +115,16 @@ def add_like(tweet_id):
     print("tweet_id:", tweet_id)
     print("*" * 80)
     db = connectToMySQL(SCHEMA_NAME)
+    query = "SELECT id FROM likes WHERE tweet_id = %(t_id)s AND user_id = %(u_id)s;"
+    data = {
+        "t_id": tweet_id,
+        "u_id": session['user_id']
+    }
+    matching_likes = db.query_db(query, data)
+    if matching_likes:
+        return redirect(request.referrer)
+
+    db = connectToMySQL(SCHEMA_NAME)
     query = """INSERT INTO likes (tweet_id, user_id)
                 VALUES(%(t_id)s, %(u_id)s);"""
     data = {
@@ -131,10 +141,10 @@ def users_show(pizza):
     print("*" * 80)
     db = connectToMySQL(SCHEMA_NAME)
     query = """SELECT users.username, tweets.content, tweets.created_at, tweets.id, COUNT(likes.id) AS num_likes FROM tweets
-                JOIN users ON users.id = tweets.creator_id
-                JOIN likes ON tweets.id = likes.tweet_id
+                LEFT JOIN users ON users.id = tweets.creator_id
+                LEFT JOIN likes ON tweets.id = likes.tweet_id
                 WHERE tweets.creator_id = %(u_id)s
-                GROUP BY likes.tweet_id
+                GROUP BY likes.tweet_id, users.username, tweets.content, tweets.created_at, tweets.id
                 ORDER BY tweets.created_at DESC;"""
     data = {
         "u_id": pizza
@@ -150,6 +160,63 @@ def users_show(pizza):
     user_list = db.query_db(query, data)
     specific_user = user_list[0]
     return render_template('users_show.html', tweets=tweet_list, user=specific_user)
+
+@app.route('/tweets/<tweet_id>/delete', methods=["POST"])
+def tweets_destroy(tweet_id):
+    if 'user_id' not in session:
+        return redirect('/users/new')
+    
+    # check to see that logged in user is creator of current tweet
+    db = connectToMySQL(SCHEMA_NAME)
+    query = "SELECT creator_id FROM tweets WHERE id=%(t_id)s;"
+    data = {
+        't_id': tweet_id
+    }
+    list_of_matching_tweets = db.query_db(query, data)
+    specific_tweet = list_of_matching_tweets[0]
+    if session['user_id'] != specific_tweet['creator_id']:
+        return redirect(request.referrer)
+
+    db = connectToMySQL(SCHEMA_NAME)
+    query = "DELETE FROM likes WHERE tweet_id = %(t_id)s;"
+    data = {
+        "t_id": tweet_id
+    }
+    db.query_db(query, data)
+
+    db = connectToMySQL(SCHEMA_NAME)
+    query = "DELETE FROM tweets WHERE id = %(t_id)s;"
+    data = {
+        "t_id": tweet_id
+    }
+    db.query_db(query, data)
+
+    return redirect('/')
+
+@app.route('/tweets/create', methods=['POST'])
+def tweets_create():
+    errors = []
+
+    if len(request.form['content']) < 1:
+        errors.append('Tweet cannot be empty')
+    
+    if len(request.form['content']) > 255:
+        errors.append("Tweet cannot exceed 255 characters")
+
+    if errors:
+        for error in errors:
+            flash(error)
+    else:
+        db = connectToMySQL(SCHEMA_NAME)
+        query = "INSERT INTO tweets (content, creator_id) VALUES(%(cont)s, %(c_id)s);"
+        data = {
+            "cont": request.form['content'],
+            "c_id": session['user_id'],
+        }
+        db.query_db(query, data)
+
+    return redirect('/')
+
 
 if __name__ == "__main__":
     app.run(debug=True)

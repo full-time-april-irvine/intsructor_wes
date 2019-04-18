@@ -24,7 +24,11 @@
         <p>{{ tweet['content'] }}</p>
         <p>Number of likes: {{ tweet['num_likes'] }}</p>
         <a href="/add_like/{{ tweet['id'] }}" class="button">Like</a>
-        <a href="">Delete</a>
+        {% if session['user_id'] == tweet['creator_id'] %}
+          <form action="/tweets/{{ tweet['id'] }}/delete" method="post">
+            <input type="submit" value="Delete">
+          </form>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
