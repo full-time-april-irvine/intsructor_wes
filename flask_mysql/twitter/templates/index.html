@@ -18,13 +18,15 @@
       {% for tweet in tweets %}
         <div class="tweet">
           <h2>
-            <a href="">@{{ tweet['username'] }}</a>
+            <a href="/users/{{ tweet['creator_id'] }}/show">@{{ tweet['username'] }}</a>
           </h2>
           <h3>Tweeted at: {{ tweet['created_at'] | time_formatter }}</h3>
           <p>{{ tweet['content'] }}</p>
           <p>Number of likes: {{ tweet['num_likes'] }}</p>
-          <a href="/add_like/{{ tweet['id'] }}">Like</a>
-          <a href="">Delete</a>
+          <a href="/add_like/{{ tweet['id'] }}" class="button">Like</a>
+          <form action="/tweets/{{ tweet['id'] }}/delete" method="post">
+            <input type="submit" value="Delete">
+          </form>
         </div>
       {% endfor %}
     </div>

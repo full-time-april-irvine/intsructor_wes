@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request, session, flash
+# from urlparse import urlparse
 from flask_bcrypt import Bcrypt
 from mysqlconnection import connectToMySQL
 import re
@@ -20,7 +21,7 @@ def index():
         return redirect('/users/new')
 
     db = connectToMySQL(SCHEMA_NAME)
-    query = """SELECT users.username, tweets.content, tweets.created_at, tweets.id, COUNT(likes.id) AS num_likes FROM tweets
+    query = """SELECT users.id AS creator_id, users.username, tweets.content, tweets.created_at, tweets.id, COUNT(likes.id) AS num_likes FROM tweets
                 JOIN users ON users.id = tweets.creator_id
                 JOIN likes ON tweets.id = likes.tweet_id
                 GROUP BY likes.tweet_id
@@ -121,7 +122,34 @@ def add_like(tweet_id):
         'u_id': session['user_id']
     }
     db.query_db(query, data)
-    return redirect('/')
+    return redirect(request.referrer)
+
+@app.route('/users/<pizza>/show')
+def users_show(pizza):
+    print("*" * 80)
+    print("Show route, user_id:", pizza)
+    print("*" * 80)
+    db = connectToMySQL(SCHEMA_NAME)
+    query = """SELECT users.username, tweets.content, tweets.created_at, tweets.id, COUNT(likes.id) AS num_likes FROM tweets
+                JOIN users ON users.id = tweets.creator_id
+                JOIN likes ON tweets.id = likes.tweet_id
+                WHERE tweets.creator_id = %(u_id)s
+                GROUP BY likes.tweet_id
+                ORDER BY tweets.created_at DESC;"""
+    data = {
+        "u_id": pizza
+    }
+    tweet_list = db.query_db(query, data)
+
+    db = connectToMySQL(SCHEMA_NAME)
+    query = """SELECT username FROM users
+                WHERE id = %(user_id)s"""
+    data = {
+        "user_id": pizza
+    }
+    user_list = db.query_db(query, data)
+    specific_user = user_list[0]
+    return render_template('users_show.html', tweets=tweet_list, user=specific_user)
 
 if __name__ == "__main__":
     app.run(debug=True)
