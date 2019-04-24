@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, Response
 import json
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def api():
         "favorite_food": "sushi",
         "favorite_color": "mint green"
     })
-    return json_data
+    return Response(response=json_data, status=200, mimetype='application/json')
 
 if __name__ == "__main__":
     app.run(debug=True)
