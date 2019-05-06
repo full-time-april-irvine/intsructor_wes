@@ -36,7 +36,10 @@ def index():
 
     # we need all activities information
     db = connectToMySQL(SCHEMA)
-    query = "SELECT activities.gold, activities.created_at, locations.name AS location_name FROM activities JOIN locations ON activities.location_id = locations.id WHERE activities.user_id = %(user_id)s ORDER BY created_at DESC;"
+    query = """SELECT activities.gold, activities.created_at, locations.name AS location_name FROM activities 
+                JOIN locations ON activities.location_id = locations.id 
+                WHERE activities.user_id = %(user_id)s
+                ORDER BY created_at DESC;"""
     data = {
         'user_id': session['user_id']
     }

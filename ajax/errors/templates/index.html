@@ -12,14 +12,23 @@
    src="https://code.jquery.com/jquery-3.2.1.min.js" 
    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" 
    crossorigin="anonymous"></script>
-  <script src="./script.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
   <title>Document</title>
 </head>
 <body>
   <div class="container">
     <h1>Hello World</h1>
-    <input type="text" name="character-search" id="character-search">
-    <div id="characters"></div>
+    <form id="reg-form" action="/process" method="post">
+      <label for="first_name">First Name:</label>
+      <input type="text" name="first_name" id="first_name" placeholder="Vanilla">
+      <label for="last_name">Last Name:</label>
+      <input type="text" id="last_name" name="last_name" placeholder="Ice">
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email" placeholder="vanillaice@yahoo.com">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" placeholder="iceicebaby99">
+      <input type="submit" value="Register">
+    </form>
   </div>
 </body>
 </html>

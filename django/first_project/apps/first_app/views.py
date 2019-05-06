@@ -1,11 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 # Create your views here.
-def index(request, color):
-    request.session['thing'] = "Hello World"
-    # request.POST
-    context = {
-        "color": color,
-        "title": "Home"
-    }
-    return render(request, 'first_app/index.html', context)
+def index(req):
+    return render(req, 'first_app/index.html')

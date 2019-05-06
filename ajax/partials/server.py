@@ -18,6 +18,7 @@ def api():
         "favorite_food": "sushi",
         "favorite_color": "mint green"
     })
+    # return json_data
     return Response(response=json_data, status=200, mimetype='application/json')
 
 if __name__ == "__main__":
