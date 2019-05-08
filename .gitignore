@@ -2,3 +2,4 @@ my_environments/
 __pycache__/
 *.pyc
 venv/
+node_modules/
