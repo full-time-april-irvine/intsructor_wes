@@ -2,11 +2,11 @@ const binarySearch = require('../binarySearch').binarySearch
 
 describe('`binarySearch()`', function() {
   test('returns true if val is in the given array and the given array has even length', function() {
-    expect(binarySearch([1, 2, 3, 4, 5, 6], 4)).toBe(true);
+    expect(binarySearch([1, 2, 3, 4, 5, 6, 7, 8], 6)).toBe(true);
   });
 
   test('returns true if val is in the given array and the given array has odd length', function() {
-    expect(binarySearch([1, 2, 3, 4, 5], 4)).toBe(true);
+    expect(binarySearch([1, 2, 3, 4, 5], 2)).toBe(true);
   });
 
   test('returns true if val is in the given array and the given array has < 2 length', function() {
